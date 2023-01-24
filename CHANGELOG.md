@@ -2,6 +2,9 @@
 
 ## main / unreleased
 
+* [ENHANCEMENT] OTLP: Add support for converting OTel Exponential Histograms to Prometheus Native Histograms. #4063
+* [BUGFIX] OTLP: Do not drop exemplars of the OTLP Monotonic Sum metric. #4063
+
 ### Grafana Mimir
 
 * [CHANGE] Querier: Errors with status code `422` coming from the store-gateway are propagated and not converted to the consistency check error anymore. #4100
