@@ -1370,11 +1370,26 @@ func blockLabelNames(ctx context.Context, indexr *bucketIndexReader, matchers []
 
 	// We ignore request's min/max time and query the entire block to make the result cacheable.
 	minTime, maxTime := indexr.block.meta.MinTime, indexr.block.meta.MaxTime
-	seriesSet, _, err := blockSeries(ctx, indexr, nil, nil, matchers, nil, nil, nil, seriesLimiter, true, minTime, maxTime, logger)
+	seriesSetsIterator, err := openBlockSeriesChunkRefsSetsIterator(
+		ctx,
+		5000,
+		indexr.block.userID,
+		indexr,
+		indexr.block.indexCache,
+		indexr.block.meta,
+		matchers,
+		nil,
+		cachedSeriesHasher{nil},
+		true,
+		minTime, maxTime,
+		newSafeQueryStats(),
+		logger,
+	)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch series")
 	}
-
+	seriesSetsIterator = newLimitingSeriesChunkRefsSetIterator(seriesSetsIterator, NewLimiter(0, nil), seriesLimiter)
+	seriesSet := newSeriesChunkRefsSeriesSet(seriesSetsIterator)
 	// Extract label names from all series. Many label names will be the same, so we need to deduplicate them.
 	labelNames := map[string]struct{}{}
 	for seriesSet.Next() {
