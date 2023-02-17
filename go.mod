@@ -226,6 +226,8 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
+replace github.com/grafana/dskit => ../dskit
+
 // Using our own fork to add custom dialer and improve perf.
 replace github.com/bradfitz/gomemcache => github.com/grafana/gomemcache v0.0.0-20220812141943-44b6cde200bb
 
