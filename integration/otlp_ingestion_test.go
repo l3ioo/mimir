@@ -88,4 +88,6 @@ func TestOTLPIngestion(t *testing.T) {
 	}
 	_, err = c.PushOTLP(series)
 	require.NoError(t, err)
+	// TODO query and assert series that contain native histogram once querying
+	// of native histograms is supported
 }
