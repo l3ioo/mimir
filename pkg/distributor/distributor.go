@@ -170,7 +170,7 @@ type Config struct {
 	SkipLabelNameValidation bool `yaml:"-"`
 
 	// This config is dynamically injected because it is defined in the querier config.
-	ShuffleShardingLookbackPeriod time.Duration `yaml:"-"`
+	ShuffleShardingIngestersEnabled bool `yaml:"-"`
 
 	// Limits for distributor
 	InstanceLimits InstanceLimits `yaml:"instance_limits"`
