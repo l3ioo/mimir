@@ -45,6 +45,7 @@ const (
 	ingestionRateFlag          = "distributor.ingestion-rate-limit"
 	ingestionBurstSizeFlag     = "distributor.ingestion-burst-size"
 	HATrackerMaxClustersFlag   = "distributor.ha-tracker.max-clusters"
+	queryIngestersWithinFlag   = "querier.query-ingesters-within"
 
 	// MinCompactorPartialBlockDeletionDelay is the minimum partial blocks deletion delay that can be configured in Mimir.
 	MinCompactorPartialBlockDeletionDelay = 4 * time.Hour
@@ -121,6 +122,7 @@ type Limits struct {
 	QueryShardingTotalShards       int            `yaml:"query_sharding_total_shards" json:"query_sharding_total_shards"`
 	QueryShardingMaxShardedQueries int            `yaml:"query_sharding_max_sharded_queries" json:"query_sharding_max_sharded_queries"`
 	SplitInstantQueriesByInterval  model.Duration `yaml:"split_instant_queries_by_interval" json:"split_instant_queries_by_interval" category:"experimental"`
+	QueryIngestersWithin           model.Duration `yaml:"query_ingesters_within" json:"query_ingesters_within" category:"advanced"`
 
 	// Query-frontend limits.
 	MaxTotalQueryLength model.Duration `yaml:"max_total_query_length" json:"max_total_query_length"`
@@ -225,6 +227,8 @@ func (l *Limits) RegisterFlags(f *flag.FlagSet) {
 	f.IntVar(&l.QueryShardingTotalShards, "query-frontend.query-sharding-total-shards", 16, "The amount of shards to use when doing parallelisation via query sharding by tenant. 0 to disable query sharding for tenant. Query sharding implementation will adjust the number of query shards based on compactor shards. This allows querier to not search the blocks which cannot possibly have the series for given query shard.")
 	f.IntVar(&l.QueryShardingMaxShardedQueries, "query-frontend.query-sharding-max-sharded-queries", 128, "The max number of sharded queries that can be run for a given received query. 0 to disable limit.")
 	f.Var(&l.SplitInstantQueriesByInterval, "query-frontend.split-instant-queries-by-interval", "Split instant queries by an interval and execute in parallel. 0 to disable it.")
+	_ = l.QueryIngestersWithin.Set("13h")
+	f.Var(&l.QueryIngestersWithin, queryIngestersWithinFlag, "Maximum lookback beyond which queries are not sent to ingester. 0 means all queries are sent to ingester.")
 
 	f.Var(&l.RulerEvaluationDelay, "ruler.evaluation-delay-duration", "Duration to delay the evaluation of rules to ensure the underlying metrics have been pushed.")
 	f.IntVar(&l.RulerTenantShardSize, "ruler.tenant-shard-size", 0, "The tenant's shard size when sharding is used by ruler. Value of 0 disables shuffle sharding for the tenant, and tenant rules will be sharded across all ruler replicas.")
@@ -537,6 +541,12 @@ func (o *Overrides) QueryShardingMaxShardedQueries(userID string) int {
 // via the query-frontend. 0 to disable limit.
 func (o *Overrides) SplitInstantQueriesByInterval(userID string) time.Duration {
 	return time.Duration(o.getOverridesForUser(userID).SplitInstantQueriesByInterval)
+}
+
+// QueryIngestersWithin returns the maximum lookback beyond which queries are not sent to ingester.
+// 0 means all queries are sent to ingester.
+func (o *Overrides) QueryIngestersWithin(userID string) time.Duration {
+	return time.Duration(o.getOverridesForUser(userID).QueryIngestersWithin)
 }
 
 // EnforceMetadataMetricName whether to enforce the presence of a metric name on metadata.
