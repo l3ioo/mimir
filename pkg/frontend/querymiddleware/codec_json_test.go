@@ -198,6 +198,10 @@ func TestPrometheusCodec_JSONResponse(t *testing.T) {
 			require.Equal(t, uint64(1), *payloadSizeHistogram.SampleCount)
 			require.Equal(t, float64(len(body)), *payloadSizeHistogram.SampleSum)
 
+			httpRequest, err := http.NewRequest(http.MethodGet, "/something", nil)
+			require.NoError(t, err)
+			httpRequest.Header.Set("Accept", jsonMimeType)
+
 			// Reset response, as the above call will have consumed the body reader.
 			httpResponse = &http.Response{
 				StatusCode:    200,
@@ -205,7 +209,7 @@ func TestPrometheusCodec_JSONResponse(t *testing.T) {
 				Body:          io.NopCloser(bytes.NewBuffer(body)),
 				ContentLength: int64(len(body)),
 			}
-			encoded, err := codec.EncodeResponse(context.Background(), decoded)
+			encoded, err := codec.EncodeResponse(context.Background(), httpRequest, decoded)
 			require.NoError(t, err)
 
 			metrics, err = dskit_metrics.NewMetricFamilyMapFromGatherer(reg)
