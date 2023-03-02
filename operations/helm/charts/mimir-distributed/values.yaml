@@ -156,6 +156,7 @@ mimir:
           {{- if eq (index .Values "chunks-cache" "backend") "redis" }}
           redis:
             endpoint: {{ include "mimir.chunksCacheAddress" . }}
+            max_item_size: {{ mul (index .Values "chunks-cache").maxItemMemory 1024 1024 }}
           {{ else }}
           memcached:
             addresses: {{ include "mimir.chunksCacheAddress" . }}
@@ -169,6 +170,7 @@ mimir:
           {{- if eq (index .Values "index-cache" "backend") "redis" }}
           redis:
             endpoint: {{ include "mimir.indexCacheAddress" . }}
+            max_item_size: {{ mul (index .Values "index-cache").maxItemMemory 1024 1024 }}
           {{ else }}
           memcached:
             addresses: {{ include "mimir.indexCacheAddress" . }}
@@ -181,6 +183,7 @@ mimir:
           {{- if eq (index .Values "metadata-cache" "backend") "redis" }}
           redis:
             endpoint: {{ include "mimir.metadataCacheAddress" . }}
+            max_item_size: {{ mul (index .Values "metadata-cache").maxItemMemory 1024 1024 }}
           {{ else }}
           memcached:
             addresses: {{ include "mimir.metadataCacheAddress" . }}
