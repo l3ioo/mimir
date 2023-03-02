@@ -16,8 +16,7 @@ remove a deprecated item from the third major release after it has been deprecat
 ## Format of changelog
 
 This changelog is continued from `enterprise-metrics` after Grafana Enterprise Metrics was added to `mimir-distributed` in PR #1203.
-All notable changes to this chart will be documented in this file.
-
+All notable changes to this chart will be documented in this file. 
 Entries should be ordered as follows:
 - [CHANGE]
 - [FEATURE]
@@ -28,6 +27,7 @@ Entries should include a reference to the Pull Request that introduced the chang
 
 ## main / unreleased
 
+* [FEATURE] Add Redis support for chunks-cache, metadata-cache and results-cache. #4348
 * [ENHANCEMENT] Support autoscaling/v2 HorizontalPodAutoscaler for nginx autoscaling starting with Kubernetes 1.23.
 
 ## 4.2.0
